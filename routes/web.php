@@ -22,13 +22,14 @@ $api->version("v1",function ($api){
 
     $api->group(["prefix" => "oauth"], function ($api){
 
-        $api->post("token","\Laravel\Passport\Http\Controllers\AccessTokenController");
+        $api->post("token","\Laravel\Passport\Http\Controllers\AccessTokenController@issueToken");
 
     });
 
     $api->group(["namespace" => "App\Http\Controllers","middleware" => ["auth:api","cors"]],function ($api){
 
-
+        //user get
+        $api->get("users","UserController@show");
 
     });
 
