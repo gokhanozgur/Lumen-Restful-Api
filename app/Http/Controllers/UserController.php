@@ -17,8 +17,6 @@ use Laravel\Passport\Bridge\UserRepository;
 
 class UserController extends Controller{
 
-    // Controller sınıfında hazır response metodları var unutma!
-
     use Helpers;
 
     protected $usersRepository;
