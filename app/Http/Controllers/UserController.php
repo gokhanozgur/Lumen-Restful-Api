@@ -37,9 +37,37 @@ class UserController extends Controller{
 
         $user = $this->usersRepository->getAll();
 
-        $response = $this->response->item($user, new UserTransformer());
+        $response = $this->response->collection($user, new UserTransformer());
 
         return $response;
+
+    }
+
+    public function add(Request $request){
+
+        $user = $this->usersRepository->insertUser($request);
+
+        $response = $this->response->created(null,$user);
+
+        return $response;
+
+    }
+
+    public function update(Request $request,$id){
+
+        $user = $this->usersRepository->updateUser($request,$id);
+
+        $response = $this->response->item($user,new UserTransformer());
+
+        return $response;
+
+    }
+
+    public function delete($id){
+
+        $user = $this->usersRepository->deleteUser($id);
+
+        return $this->success($user,200);
 
     }
 
