@@ -42,9 +42,12 @@ class UsersRepository
 
         $user->save();
 
+
+        return $user;
+
     }
 
-    public function updateUser($id){
+    public function updateUser($input,$id){
 
         $user = User::find($id);
 
@@ -57,13 +60,23 @@ class UsersRepository
 
         $user->save();
 
+        return $user;
 
     }
 
     public function deleteUser($id){
 
         $user = User::find($id);
-        $user->delete();
+
+        if($user){
+            $user->delete();
+
+            return "User deleted.";
+        }
+        else{
+            return "User not found.";
+        }
+
 
     }
 

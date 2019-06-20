@@ -31,6 +31,12 @@ $api->version("v1",function ($api){
         //user get
         $api->get("users","UserController@show");
 
+        $api->post("users/add","UserController@add");
+
+        $api->put("users/update/{id}","UserController@update");
+
+        $api->delete("users/delete/{id}","UserController@delete");
+
     });
 
 });
