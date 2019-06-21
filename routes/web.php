@@ -16,28 +16,27 @@ $router->get('/', function () use ($router) {
 });
 
 
-$api = app("Dingo\Api\Routing\Router");
 
-$api->version("v1",function ($api){
+$router->group(["prefix" => "api/v1"],function () use ($router){
 
-    $api->group(["prefix" => "oauth"], function ($api){
+    $router->group(["prefix" => "oauth"], function () use ($router){
 
-        $api->post("token","\Laravel\Passport\Http\Controllers\AccessTokenController@issueToken");
+        $router->post("token","\Laravel\Passport\Http\Controllers\AccessTokenController@issueToken");
 
     });
 
-    $api->group(["namespace" => "App\Http\Controllers","middleware" => ["auth:api","cors"]],function ($api){
+    $router->group(["middleware" => ["auth:api","cors"]],function () use ($router) {
 
-        //user get
-        $api->get("users","UserController@show");
+        //user
+        $router->get("users","UserController@show");
 
-        $api->get("users/user/{id}","UserController@showUser");
+        $router->get("users/user/{id}","UserController@showUser");
 
-        $api->post("users/add","UserController@add");
+        $router->post("users/add","UserController@add");
 
-        $api->put("users/update/{id}","UserController@update");
+        $router->put("users/update/{id}","UserController@update");
 
-        $api->delete("users/delete/{id}","UserController@softDelete");
+        $router->delete("users/delete/{id}","UserController@softDelete");
 
     });
 

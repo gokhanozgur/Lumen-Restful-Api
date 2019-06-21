@@ -8,45 +8,49 @@
 
 namespace App\Http\Controllers;
 use App\Repository\UsersRepository;
-use App\Transformer\UserTransformer;
 use App\User;
-use Dingo\Api\Routing\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\Bridge\UserRepository;
 
 class UserController extends Controller{
 
-    use Helpers;
 
     protected $usersRepository;
-    protected $userTransformer;
 
     /**
      * UserController constructor.
      * @param $usersRepository
      * @param $userTransformer
      */
-    public function __construct(UsersRepository $usersRepository, UserTransformer $userTransformer)
+    public function __construct(UsersRepository $usersRepository)
     {
         $this->usersRepository = $usersRepository;
-        $this->userTransformer = $userTransformer;
     }
 
     public function show(){
 
-        $user = $this->usersRepository->getAll();
+        $users = $this->usersRepository->getAll();
 
-        if($user){
-            $response = $this->response->collection($user, new UserTransformer());
+        if($users){
+
+            $response = [
+                "message"   => "All user data list",
+                "status"    => 200,
+                "data"      => $users,
+            ];
+
         }
         else{
 
-            $response = $this->error("User not found.",200);
+            $response = [
+                "message"  => "Empty data",
+                "status"   => 200,
+            ];
 
         }
 
-        return $response;
+        return response()->json($response);
 
     }
 
@@ -55,44 +59,122 @@ class UserController extends Controller{
         $user = $this->usersRepository->getById($id);
 
         if($user){
-            $response = $this->response->item($user, new UserTransformer());
+
+            $response = [
+                "message"   => "User data",
+                "status"    => 200,
+                "data"      => $user,
+            ];
+
         }
         else{
 
-            $response = $this->error("User not found.",200);
+            $response = [
+                "message"  => "User not exist",
+                "status"   => 200,
+            ];
 
         }
 
-        return $response;
+        return response()->json($response);
 
     }
 
     public function add(Request $request){
 
-        $user = $this->usersRepository->insertUser($request);
-        $response = $user;
+        $isUserExist = User::where("email",$request["email"])->first();
 
-        return $response;
+
+        if(is_null($isUserExist))
+        {
+            $user = $this->usersRepository->insertUser($request);
+
+            $response = [
+                "message"   => "Create user process successful",
+                "status"    => 200,
+                "data"      => $user,
+            ];
+
+        }
+        else{
+
+            $response = [
+                "message"  => "User is already exist.",
+                "status"   => 200,
+            ];
+
+        }
+
+        return response()->json($response);
 
     }
 
     public function update(Request $request,$id){
 
-        $user = $this->usersRepository->updateUser($request,$id);
+        $isUserExist = User::find($id);
 
-        $response = $this->response->item($user,new UserTransformer());
+        if(!is_null($isUserExist))
+        {
+            $user = $this->usersRepository->updateUser($request,$id);
 
-        return $response;
+            $response = [
+                "message"   => "Update user process successful",
+                "status"    => 200,
+                "data"      => $user,
+            ];
+
+        }
+        else{
+
+            $response = [
+                "message"  => "User not exist",
+                "status"   => 200,
+            ];
+
+        }
+
+        return response()->json($response);
 
     }
 
     public function softDelete($id){
 
-        $user = $this->usersRepository->softDeleteUser($id);
+        $user = User::find($id);
 
-        $response = $this->response->array(["data" => $user]);
+        if(!is_null($user))
+        {
 
-        return $response;
+            if($user->status == 1 && is_null($user->deleted_at)){
+
+                $deletedUserInfo = $this->usersRepository->softDeleteUser($id);
+
+                $response = [
+                    "message"   => "User delete process successful",
+                    "status"    => 200,
+                    "data"      => $deletedUserInfo,
+                ];
+
+            }
+            else{
+
+                $response = [
+                    "message"  => "User already deleted",
+                    "status"   => 200,
+                ];
+
+            }
+
+        }
+        else{
+
+            $response = [
+                "message"  => "User not exist",
+                "status"   => 200,
+            ];
+
+        }
+
+        return response()->json($response);
 
     }
 

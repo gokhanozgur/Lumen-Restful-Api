@@ -91,8 +91,6 @@ $app->configure('cors');
 
  $app->register(Barryvdh\Cors\ServiceProvider::class);
 
- $app->register(Dingo\Api\Provider\LumenServiceProvider::class);
-
 
 /*
 |--------------------------------------------------------------------------
