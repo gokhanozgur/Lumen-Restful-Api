@@ -25,7 +25,7 @@ $router->group(["prefix" => "api/v1"],function () use ($router){
 
     });
 
-    $router->group(["middleware" => ["auth:api","cors"]],function () use ($router) {
+    $router->group(["middleware" => ["auth","cors"]],function () use ($router) {
 
         //user
         $router->get("users","UserController@show");
