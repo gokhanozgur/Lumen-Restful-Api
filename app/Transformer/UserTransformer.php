@@ -26,6 +26,7 @@ class UserTransformer extends TransformerAbstract
             "email"         => $user->email,
             "city"          => $user->city,
             "status"        => $user->status,
+            "deleted_at"    => $user->deleted_at
 
         ];
 

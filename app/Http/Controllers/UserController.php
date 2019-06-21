@@ -37,7 +37,31 @@ class UserController extends Controller{
 
         $user = $this->usersRepository->getAll();
 
-        $response = $this->response->collection($user, new UserTransformer());
+        if($user){
+            $response = $this->response->collection($user, new UserTransformer());
+        }
+        else{
+
+            $response = $this->error("User not found.",200);
+
+        }
+
+        return $response;
+
+    }
+
+    public function showUser($id){
+
+        $user = $this->usersRepository->getById($id);
+
+        if($user){
+            $response = $this->response->item($user, new UserTransformer());
+        }
+        else{
+
+            $response = $this->error("User not found.",200);
+
+        }
 
         return $response;
 
@@ -46,8 +70,7 @@ class UserController extends Controller{
     public function add(Request $request){
 
         $user = $this->usersRepository->insertUser($request);
-
-        $response = $this->response->created(null,$user);
+        $response = $user;
 
         return $response;
 
@@ -63,11 +86,13 @@ class UserController extends Controller{
 
     }
 
-    public function delete($id){
+    public function softDelete($id){
 
-        $user = $this->usersRepository->deleteUser($id);
+        $user = $this->usersRepository->softDeleteUser($id);
 
-        return $this->success($user,200);
+        $response = $this->response->array(["data" => $user]);
+
+        return $response;
 
     }
 

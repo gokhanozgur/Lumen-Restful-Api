@@ -31,19 +31,38 @@ class UsersRepository
 
     public function insertUser($input){
 
-        $user = new User();
+        $user = User::where("email",$input["email"])->first();
 
-        $user->first_name = $input["first_name"];
-        $user->last_name = $input["last_name"];
-        $user->email = $input["email"];
-        $user->password = Hash::make($input["password"]);
-        $user->city = $input["city"];
-        $user->status = $input["status"];
+        if(is_null($user)){
 
-        $user->save();
+            $user = new User();
 
+            $user->first_name   = $input["first_name"];
+            $user->last_name    = $input["last_name"];
+            $user->email        = $input["email"];
+            $user->password     = Hash::make($input["password"]);
+            $user->city         = $input["city"];
+            $user->status       = $input["status"];
 
-        return $user;
+            $user->save();
+
+            $response = [
+                "message"   => "Create user process successful",
+                "data"      => $user
+            ];
+
+            return response()->json($response);
+
+        }
+        else{
+
+            $response = [
+                "message" => "User is already exist."
+            ];
+
+            return response()->json($response);
+
+        }
 
     }
 
@@ -51,12 +70,12 @@ class UsersRepository
 
         $user = User::find($id);
 
-        $user->first_name = $input["first_name"];
-        $user->last_name = $input["last_name"];
-        $user->email = $input["email"];
-        $user->password = Hash::make($input["password"]);
-        $user->city = $input["city"];
-        $user->status = $input["status"];
+        $user->first_name   = $input["first_name"];
+        $user->last_name    = $input["last_name"];
+        $user->email        = $input["email"];
+        $user->password     = Hash::make($input["password"]);
+        $user->city         = $input["city"];
+        $user->status       = $input["status"];
 
         $user->save();
 
@@ -64,19 +83,30 @@ class UsersRepository
 
     }
 
-    public function deleteUser($id){
+    public function softDeleteUser($id){
 
         $user = User::find($id);
 
         if($user){
-            $user->delete();
 
-            return "User deleted.";
+            if($user->status == 1 && is_null($user->deleted_at)){
+
+                $user->status = 0;
+                $user->deleted_at = date("Y-m-d H:i:s");
+
+                $user->save();
+
+                return $user;
+
+            }
+            else{
+                return "User already deleted.";
+            }
+
         }
         else{
             return "User not found.";
         }
-
 
     }
 
